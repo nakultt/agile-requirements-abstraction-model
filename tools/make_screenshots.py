@@ -22,7 +22,7 @@ BROWSER = next((b for b in BROWSERS if b and Path(b).exists()), None)
 
 VIEWS = {  # route -> (file name, window height); width 900 keeps text large when printed
     "model": ("01-model", 860), "workup": ("02-workup", 800), "validate": ("03-validation", 800),
-    "trace": ("04-traceability", 620), "plan": ("05-planning", 640), "metrics": ("06-metrics", 640),
+    "trace": ("04-traceability", 620), "plan": ("05-planning", 780), "metrics": ("06-metrics", 640),
 }
 
 

@@ -1,7 +1,7 @@
 """Render report/report.html to report/RAM_Report.pdf with headless Edge/Chrome.
 
 Two passes: the first render finds the page on which each section starts; the second fills
-the table of contents with those page numbers. Requires pypdf.
+the table of contents with those page numbers. Requires pypdf and pymupdf.
 
 Usage: python tools/build_report.py
 """
@@ -42,6 +42,19 @@ def render(html: Path, pdf: Path):
                         f"--print-to-pdf={pdf}", html.as_uri()], check=True, capture_output=True, timeout=180)
 
 
+def add_border(pdf: Path, inset: float = 16, width: float = 1.2):
+    """Draw a thin rectangular border on every page (Chrome cannot repeat one reliably)."""
+    import pymupdf
+    doc = pymupdf.open(str(pdf))
+    for page in doc:
+        r = page.rect
+        page.draw_rect(pymupdf.Rect(inset, inset, r.width - inset, r.height - inset), color=(0, 0, 0), width=width)
+    tmp = pdf.with_suffix(".tmp.pdf")
+    doc.save(str(tmp), garbage=3, deflate=True)
+    doc.close()
+    tmp.replace(pdf)
+
+
 def find_pages(pdf: Path):
     pages = [norm(p.extract_text() or "") for p in PdfReader(str(pdf)).pages]
     found = {}
@@ -66,6 +79,7 @@ if __name__ == "__main__":
         print("WARNING: headings not found:", sorted(missing))
     TMP.write_text(re.sub(r"\{\{pg:(\w+)\}\}", lambda m: str(found.get(m.group(1), "")), src), encoding="utf-8")
     render(TMP, OUT)
+    add_border(OUT)
     found2, n2 = find_pages(OUT)
     print(f"pages: {n2}  toc: {found2}")
     if found2 != found:

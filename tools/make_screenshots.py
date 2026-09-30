@@ -20,9 +20,9 @@ BROWSERS = [r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
             shutil.which("chromium") or "", shutil.which("google-chrome") or ""]
 BROWSER = next((b for b in BROWSERS if b and Path(b).exists()), None)
 
-VIEWS = {  # route -> (file name, window height)
-    "model": ("01-model", 840), "workup": ("02-workup", 780), "validate": ("03-validation", 820),
-    "trace": ("04-traceability", 640), "plan": ("05-planning", 600), "metrics": ("06-metrics", 560),
+VIEWS = {  # route -> (file name, window height); width 900 keeps text large when printed
+    "model": ("01-model", 860), "workup": ("02-workup", 800), "validate": ("03-validation", 800),
+    "trace": ("04-traceability", 620), "plan": ("05-planning", 640), "metrics": ("06-metrics", 640),
 }
 
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         sys.exit("No Edge/Chrome found")
     idx = (ROOT / "webapp" / "index.html").as_uri()
     for route, (name, h) in VIEWS.items():
-        shoot(f"{idx}#{route}", OUT / f"{name}.png", 1040, h)
+        shoot(f"{idx}#{route}", OUT / f"{name}.png", 960, h)
         print("wrote", name)
     terminal_png("Terminal - abstraction tree", "tree", OUT / "07-cli-tree.png")
     terminal_png("Terminal - validation", "validate", OUT / "08-cli-validate.png")

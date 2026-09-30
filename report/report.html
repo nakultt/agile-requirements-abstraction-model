@@ -154,7 +154,7 @@
 <h1>4&nbsp; RAM Adapted for Agile Teams</h1>
 <h2>4.1&nbsp; Levels and their agile counterparts</h2>
 <p>Figure 1 shows the four levels as a pyramid: a small number of abstract goals at the top, growing in number and detail towards the base. Table 1 relates each level to familiar agile artefacts. The mapping is an interpretation, not part of the original model: the Product Goal of the Scrum Guide corresponds to RAM's Product level, epics and features to the Feature level, user stories or Product Backlog Items to the Function level, and acceptance criteria, non-functional requirements and technical tasks to the Component level.</p>
-<figure class="nb"><img src="../docs/figures/fig1-ram-pyramid.png" style="width:100mm"><figcaption><b>Figure 1.</b> The four RAM abstraction levels used by the toolkit.</figcaption></figure>
+<figure class="nb"><img src="../docs/figures/fig1-ram-pyramid.png" style="width:130mm"><figcaption><b>Figure 1.</b> The four RAM abstraction levels used by the toolkit.</figcaption></figure>
 <table class="d"><caption><b>Table 1.</b> RAM levels, typical content and agile counterparts.</caption>
 <tr><th>Level</th><th>Typical content</th><th>Example (CampusConnect)</th><th>Agile counterpart</th></tr>
 <tr><td>L1 Product</td><td>Goals, strategy, business value</td><td>Reduce administrative cost of student support</td><td>Product Goal</td></tr>
@@ -176,7 +176,7 @@
 <h1>5&nbsp; System Design and Implementation</h1>
 <h2>5.1&nbsp; Architecture</h2>
 <p>The system has five layers (Figure 2). Requirement sources feed a JSON repository. The <em>classifier</em> and <em>work-up engine</em> analyse incoming items; the <em>validator</em> checks the model; <em>analysis</em> and the <em>sprint planner</em> derive traceability, metrics and plans. Two interfaces expose the same functions: a command-line interface (<code>python -m ram</code>) and the RAM Studio web application. The implementation is deliberately small (about 540 lines of library code and 313 lines of web application) so that teams can read and adapt it.</p>
-<figure class="nb"><img src="../docs/figures/fig2-architecture.png" style="width:118mm"><figcaption><b>Figure 2.</b> Architecture of RAM Studio.</figcaption></figure>
+<figure class="nb"><img src="../docs/figures/fig2-architecture.png" style="width:160mm"><figcaption><b>Figure 2.</b> Architecture of RAM Studio.</figcaption></figure>
 <h2>5.2&nbsp; Data model</h2>
 <p>A <code>Requirement</code> has an identifier, title, description, level (an integer enumeration 1–4), an optional parent identifier, a status (<code>new</code>, <code>workup</code>, <code>accepted</code>, <code>in_sprint</code>, <code>done</code>, <code>rejected</code>), value, cost and risk estimates, a source, a rationale and a list of acceptance criteria. A <code>RequirementSet</code> stores requirements by identifier and provides the hierarchy operations <code>children</code>, <code>ancestors</code> (robust against cycles and dangling parents) and <code>descendants</code>, plus JSON persistence. Using parent links rather than nested documents lets the same requirement be re-parented and makes defects such as orphans and skipped levels expressible and therefore detectable.</p>
 <h2>5.3&nbsp; Abstraction-level classifier</h2>
@@ -224,17 +224,17 @@
 <p>This section shows the toolkit operating on CampusConnect. All screenshots were captured automatically from the running application or real command-line output by scripts in the repository.</p>
 <h2>7.1&nbsp; Model view</h2>
 <p>Figure 3 shows the model view. The top row reports four headline indicators. The abstraction tree shows every requirement under its parent, colour-coded by level, with status badges for items outside the model; requirements with no parent appear in a separate <q>outside the model</q> list. The right-hand panel shows the RAM pyramid with live counts and the details of the selected requirement, including its trace to a product goal and its score.</p>
-<figure><img src="../docs/screenshots/01-model.png" style="width:92mm"><figcaption><b>Figure 3.</b> RAM Studio, model view: abstraction tree (excerpt), pyramid counts and selected-requirement details.</figcaption></figure>
+<figure><img src="../docs/screenshots/01-model.png" style="width:166mm"><figcaption><b>Figure 3.</b> RAM Studio, model view: abstraction tree (excerpt), pyramid counts and selected-requirement details.</figcaption></figure>
 <h2>7.2&nbsp; Work-up view</h2>
 <p>Figure 4 shows work-up advice for the raw requirement <q>Integrate with the Moodle LMS</q>. The classifier assigns the Feature level with 76% confidence, showing the cue scores that produced the decision. The engine recommends refinement down to the Function level before scheduling and warns that the suggested parent P1 has weak lexical overlap, so the analyst must verify the link. The queue at the bottom lists the four raw requirements with their predicted level and suggested parent.</p>
-<figure><img src="../docs/screenshots/02-workup.png" style="width:92mm"><figcaption><b>Figure 4.</b> Work-up view: level scores, matched cues, parent suggestion and abstraction/refinement advice.</figcaption></figure>
+<figure><img src="../docs/screenshots/02-workup.png" style="width:166mm"><figcaption><b>Figure 4.</b> Work-up view: level scores, matched cues, parent suggestion and abstraction/refinement advice.</figcaption></figure>
 <h2>7.3&nbsp; Validation</h2>
 <p>Figure 5 shows the validation report for CampusConnect: one error, eight warnings and four informational messages. All three seeded defects were found: FN16 (R001 orphan), C11 (R003 skipped level) and FN17 (R008 duplicate of FN5; it is also reported against the raw requirement N4, which repeats the same text). The validator additionally reported three items without acceptance criteria (R007) and, unseeded, a level mismatch for feature F1 (R005): its description (<q>personal timetable management and the discovery of campus events</q>) reads like a goal to the classifier. This is a legitimate prompt for discussion rather than a false alarm, although it also illustrates the cost of lexical classification.</p>
-<figure><img src="../docs/screenshots/03-validation.png" style="width:92mm"><figcaption><b>Figure 5.</b> Model validation report with severity, rule, affected requirement and finding.</figcaption></figure>
+<figure><img src="../docs/screenshots/03-validation.png" style="width:166mm"><figcaption><b>Figure 5.</b> Model validation report with severity, rule, affected requirement and finding.</figcaption></figure>
 <h2>7.4&nbsp; Traceability and planning</h2>
 <p>Figure 6 shows the traceability matrix, one row per leaf-to-root chain. The orphan FN16 is immediately visible as a row whose Product and Feature cells are empty, and C11 appears with an empty Function cell. Figure 7 shows the sprint board for a capacity of 14 points.</p>
-<figure><img src="../docs/screenshots/04-traceability.png" style="width:92mm"><figcaption><b>Figure 6.</b> Traceability matrix (excerpt). Empty cells (—) expose orphans and skipped levels.</figcaption></figure>
-<figure><img src="../docs/screenshots/05-planning.png" style="width:92mm"><figcaption><b>Figure 7.</b> Sprint planning board at a capacity of 14 points.</figcaption></figure>
+<figure><img src="../docs/screenshots/04-traceability.png" style="width:166mm"><figcaption><b>Figure 6.</b> Traceability matrix (excerpt). Empty cells (—) expose orphans and skipped levels.</figcaption></figure>
+<figure><img src="../docs/screenshots/05-planning.png" style="width:166mm"><figcaption><b>Figure 7.</b> Sprint planning board at a capacity of 14 points.</figcaption></figure>
 <p>Table 4 lists the plan. Sprint 1 contains the three highest-scoring functions (timetable display, add-to-timetable and login) and fills the sprint exactly. Notification of lecture cancellations (FN4) has high value (9) but a cost of 8 points once its delivery-pipeline component is included, so it lands in the backlog; this is a trade-off the ranking makes visible. The orphan FN16 and the four raw items were correctly excluded. One weakness is visible too: the duplicate FN17 was scheduled, because duplicate detection is advisory and does not block planning.</p>
 <table class="d"><caption><b>Table 4.</b> Generated sprint plan (capacity 14 points; points include component children).</caption>
 <tr><th>Sprint</th><th class="n">Points</th><th>Requirements (in planning order)</th></tr>
@@ -245,8 +245,8 @@
 </table>
 <h2>7.5&nbsp; Metrics and command-line interface</h2>
 <p>Figure 8 shows the metrics view, with the distribution across levels, three coverage indicators and the ranking of Function-level requirements. Figure 9 shows the same model through the command-line interface, which is suitable for continuous integration: <code>python -m ram validate --strict</code> returns a non-zero exit code when errors are present.</p>
-<figure><img src="../docs/screenshots/06-metrics.png" style="width:92mm"><figcaption><b>Figure 8.</b> Metrics view: requirements per level, coverage indicators and ranking.</figcaption></figure>
-<figure><img src="../docs/screenshots/08-cli-validate.png" style="width:100mm"><figcaption><b>Figure 9.</b> Command-line output of <code>python -m ram validate</code>.</figcaption></figure>
+<figure><img src="../docs/screenshots/06-metrics.png" style="width:166mm"><figcaption><b>Figure 8.</b> Metrics view: requirements per level, coverage indicators and ranking.</figcaption></figure>
+<figure><img src="../docs/screenshots/08-cli-validate.png" style="width:150mm"><figcaption><b>Figure 9.</b> Command-line output of <code>python -m ram validate</code>.</figcaption></figure>
 </section>
 
 <!-- ============================== 8 EVALUATION ============================== -->
@@ -265,7 +265,7 @@
 </table>
 
 <p>The errors are systematic, not random. All eight held-out errors were predicted as Function: all four product goals (for example <q>Make our students feel that the university listens to them</q>), three of four features (<q>A carpooling option for commuters</q>) and one component (<q>The mobile app targets Android 10 and above</q>). The cause is structural. Product- and feature-level statements can be phrased without any of the cue words that the lexicon recognises, and when no cue fires the classifier falls back to Function. Component statements are found reliably when they contain units or technology terms, and Function statements are found reliably when they contain interface vocabulary. The asymmetry suggests that concreteness is easy to detect lexically while abstraction is not. On the 40 accepted requirements of the case study the classifier agreed with the stated level in 38 cases (95%); the two disagreements were features F1 and F6, which it read as product-level statements with 59% and 52% confidence.</p>
-<figure class="nb"><img src="../docs/figures/fig3-confusion.png" style="width:118mm"><figcaption><b>Figure 10.</b> Confusion matrices on the labelled and held-out sets.</figcaption></figure>
+<figure class="nb"><img src="../docs/figures/fig3-confusion.png" style="width:160mm"><figcaption><b>Figure 10.</b> Confusion matrices on the labelled and held-out sets.</figcaption></figure>
 <h2>8.2&nbsp; Validator and model analysis (RQ3)</h2>
 <p>The validator detected all three seeded defects with no missed detections (3/3) and produced two additional, arguably legitimate findings (R005 on F1 and the N4/FN17 duplicate pair). Because the seeded defects were defined by the author, this is a test of the implementation, not a measurement of how many defects occur in real backlogs. Table 6 shows the headline model metrics.</p>
 <table class="d"><caption><b>Table 6.</b> Model metrics for CampusConnect.</caption>

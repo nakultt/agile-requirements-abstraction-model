@@ -1,0 +1,17 @@
+level,text
+1,Make our students feel that the university listens to them.
+1,Lower the amount of paperwork that staff handle every term.
+1,Win the trust of parents who send their children to us.
+1,Be recognised as the most digitally mature university in the region.
+2,Students get a single place to see grades and feedback.
+2,A carpooling option for commuters.
+2,Campus event ticketing with wallet passes.
+2,Allow clubs to manage their own memberships and announcements.
+3,The user taps a room on the list and the system shows its photos and equipment.
+3,When the form is incomplete the system highlights the missing fields in red.
+3,Pressing the back arrow returns the user to the previous screen without losing input.
+3,The system sends a reminder email the evening before an exam.
+4,Responses above 1 MB are compressed with gzip before leaving the server.
+4,Each microservice exposes a health endpoint polled every 30 seconds.
+4,Database backups run nightly and are kept for 14 days.
+4,The mobile app targets Android 10 and above and iOS 15 and above.

@@ -1,0 +1,34 @@
+{
+  "note": "Weighted cue lexicon shared by the Python classifier and the web app. Patterns are regular expressions matched case-insensitively against the requirement text.",
+  "product": [
+    ["\\b(goal|goals|vision|strategy|strategic|strategically)\\b", 2.0],
+    ["\\b(business|market|competitive|compete|competitors?|brand|revenue)\\b", 1.8],
+    ["\\b(organi[sz]ation|organi[sz]ational|institution|stakeholders?|management)\\b", 1.5],
+    ["\\b(retention|adoption|satisfaction|trustworthy|reputation|long-term)\\b", 1.6],
+    ["\\b(increase|improve|reduce|strengthen|become|establish|ensure)\\b", 0.9],
+    ["\\bcompl(y|ies|iance)\\b", 0.8],
+    ["\\b(platform|overall|preferred|channel)\\b", 0.6]
+  ],
+  "feature": [
+    ["\\b(feature|capability|capabilities|module|portal|service|workflow|dashboard)\\b", 1.6],
+    ["\\b(support|supports|provide|provides|offers?|includes?)\\b", 1.1],
+    ["\\b(enable|enables|allow|allows)\\b", 1.0],
+    ["\\b(integrat\\w+|personali[sz]ed|multi-language|accessibility|notification centre)\\b", 1.3],
+    ["\\b(manage|management|matching|planning)\\b", 0.7]
+  ],
+  "function": [
+    ["\\b(shall|must)\\b", 0.8],
+    ["\\b(user|student|users|students) (can|shall|is able|should be able)\\b", 1.8],
+    ["\\b(the system|system) shall\\b", 1.2],
+    ["\\b(display|displays|show|shows|send|sends|validate|calculate|submit|select|click|tap|taps|swip\\w+|upload|download|search|sort|filter|log in|log out|reset|confirm|mark)\\b", 1.3],
+    ["\\b(button|field|fields|form|screen|page|message|drop-down|link|list|banner)\\b", 1.3],
+    ["\\b(when|if|after|before|while)\\b", 0.5]
+  ],
+  "component": [
+    ["\\b\\d+(\\.\\d+)?\\s?(ms|s|sec|seconds|minutes|mb|gb|kb|%|replicas|messages|records|attempts|times)\\b", 2.6],
+    ["\\b(http|https|rest|json|sql|sqlite|redis|api|tls|ssl|aes|jwt|oauth|pkce|smtp|ttl|lru|cpu|bcrypt|hash(es)?)\\b", 1.9],
+    ["\\b(database|table|schema|index|indexed|cache|queue|thread|endpoint|protocol|algorithm|object storage|gateway|adapter|replica|constraint|foreign key)\\b", 1.4],
+    ["\\b(latency|throughput|encrypt\\w*|retry|p95|percentile|utili[sz]ation)\\b", 1.6],
+    ["\\b(class|component|client|layer|returns?)\\b", 0.5]
+  ]
+}

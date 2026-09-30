@@ -1,0 +1,49 @@
+level,text
+1,Become the preferred digital channel for communication between the university and its students.
+1,Increase student retention by making campus life easier to navigate.
+1,Reduce the cost of delivering routine administrative services to the organization.
+1,Strengthen the university's brand as an innovative institution in the education market.
+1,Ensure the platform complies with the regulatory obligations that apply to the institution's stakeholders.
+1,Support the long-term strategy of expanding flexible and remote learning offers.
+1,Improve satisfaction of international students during their first semester.
+1,Generate new revenue by opening the platform to local businesses.
+1,Give management a clear overview of how the services are used across the organization.
+1,Enable the university to compete with other institutions for prospective students.
+1,Increase the adoption of sustainable transport among staff and students.
+1,Provide a product that stakeholders consider trustworthy and reliable.
+2,The app supports group study planning with shared calendars.
+2,Provide a library module that allows students to reserve and renew books.
+2,The platform includes a personalised dashboard for each student.
+2,Enable integration with the learning management system.
+2,Support multi-language content across the application.
+2,Provide a feedback service for course evaluations.
+2,The app offers a lost-and-found capability for campus items.
+2,Allow students to manage their payment methods and fee history in one portal.
+2,Include a workflow for approving extension requests.
+2,Support accessibility features for visually impaired users.
+2,Provide a notification centre for announcements.
+2,Enable peer tutoring matching between students.
+3,The system shall display the remaining library loan days on the book details screen.
+3,"When the user taps the Submit button, the system shall validate the feedback form fields."
+3,The user can filter the event list by category.
+3,The system shall send a confirmation message after an extension request is submitted.
+3,The user shall be able to reset the password by clicking the link sent by email.
+3,The system shall sort search results by relevance and show the first page of hits.
+3,The user can upload a profile photo from the settings page.
+3,The system shall display an error message if the student number entered is invalid.
+3,The user can select a language from the drop-down list on the welcome screen.
+3,The system shall calculate the outstanding fee total and show it on the payment screen.
+3,The user can mark an announcement as read by swiping left.
+3,The system shall show the tutor's availability when the user opens the tutor profile.
+4,The search service shall return results in under 200 ms using an inverted index.
+4,All API traffic shall be encrypted using TLS 1.3.
+4,The database shall store passwords as bcrypt hashes with a cost factor of 12.
+4,The image upload endpoint shall accept files up to 5 MB and store them in object storage.
+4,The notification queue shall process at least 1000 messages per second.
+4,The REST API shall return JSON responses with pagination of 50 records per page.
+4,The cache layer shall evict entries after 10 minutes using an LRU policy.
+4,The mobile client shall use a local SQLite table to persist drafts.
+4,The payment adapter class shall call the gateway over HTTPS and retry failed requests twice.
+4,The schema shall contain a foreign key from enrollments to courses with an index.
+4,The service shall run on two replicas with CPU utilisation below 70%.
+4,Session data shall be stored in Redis with a TTL of 30 minutes.

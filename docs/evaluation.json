@@ -1,0 +1,153 @@
+{
+  "labelled": {
+    "n": 48,
+    "accuracy": 1.0,
+    "confusion": {
+      "Product": {
+        "Product": 12,
+        "Feature": 0,
+        "Function": 0,
+        "Component": 0
+      },
+      "Feature": {
+        "Product": 0,
+        "Feature": 12,
+        "Function": 0,
+        "Component": 0
+      },
+      "Function": {
+        "Product": 0,
+        "Feature": 0,
+        "Function": 12,
+        "Component": 0
+      },
+      "Component": {
+        "Product": 0,
+        "Feature": 0,
+        "Function": 0,
+        "Component": 12
+      }
+    },
+    "per_level": {
+      "Product": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "Feature": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "Function": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "Component": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "misclassified": []
+  },
+  "heldout": {
+    "n": 16,
+    "accuracy": 0.5,
+    "confusion": {
+      "Product": {
+        "Product": 0,
+        "Feature": 0,
+        "Function": 4,
+        "Component": 0
+      },
+      "Feature": {
+        "Product": 0,
+        "Feature": 1,
+        "Function": 3,
+        "Component": 0
+      },
+      "Function": {
+        "Product": 0,
+        "Feature": 0,
+        "Function": 4,
+        "Component": 0
+      },
+      "Component": {
+        "Product": 0,
+        "Feature": 0,
+        "Function": 1,
+        "Component": 3
+      }
+    },
+    "per_level": {
+      "Product": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "Feature": {
+        "precision": 1.0,
+        "recall": 0.25,
+        "f1": 0.4
+      },
+      "Function": {
+        "precision": 0.333,
+        "recall": 1.0,
+        "f1": 0.5
+      },
+      "Component": {
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.857
+      }
+    },
+    "misclassified": [
+      [
+        "Product",
+        "Function",
+        "Make our students feel that the university listens to them."
+      ],
+      [
+        "Product",
+        "Function",
+        "Lower the amount of paperwork that staff handle every term."
+      ],
+      [
+        "Product",
+        "Function",
+        "Win the trust of parents who send their children to us."
+      ],
+      [
+        "Product",
+        "Function",
+        "Be recognised as the most digitally mature university in the region."
+      ],
+      [
+        "Feature",
+        "Function",
+        "Students get a single place to see grades and feedback."
+      ],
+      [
+        "Feature",
+        "Function",
+        "A carpooling option for commuters."
+      ],
+      [
+        "Feature",
+        "Function",
+        "Campus event ticketing with wallet passes."
+      ],
+      [
+        "Component",
+        "Function",
+        "The mobile app targets Android 10 and above and iOS 15 and above."
+      ]
+    ]
+  },
+  "sample": {
+    "n": 40,
+    "accuracy": 0.95
+  }
+}

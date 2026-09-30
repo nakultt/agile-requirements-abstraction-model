@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAM Studio</title>
+<style>
+  :root {
+    --bg:#f5f6f8; --panel:#fff; --ink:#1c2230; --muted:#667085; --line:#e3e6ec;
+    --l1:#6d4bd8; --l2:#0a7ea4; --l3:#15803d; --l4:#b45309; --accent:#3356e0;
+    --err:#c0392b; --warn:#b7791f; --info:#2f6fb5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12151c; --panel:#1b2030; --ink:#e7eaf2; --muted:#9aa3b5; --line:#2a3145;
+            --l1:#9b84f0; --l2:#4cc0e6; --l3:#4ade80; --l4:#f0a84b; --accent:#7b93ff; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--panel); border-bottom:1px solid var(--line); padding:14px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; letter-spacing:.2px; }
+  header h1 span { color:var(--muted); font-weight:400; }
+  nav { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; }
+  nav a { padding:6px 12px; border-radius:6px; color:var(--muted); text-decoration:none; font-weight:500; }
+  nav a.on { background:var(--accent); color:#fff; }
+  main { max-width:1180px; margin:0 auto; padding:20px 24px 48px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:16px; }
+  .card h2 { font-size:15px; margin:0 0 10px; }
+  .grid { display:grid; gap:16px; }
+  .g4 { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+  .g2 { grid-template-columns:2fr 1fr; } .g11 { grid-template-columns:1fr 1fr; } @media (max-width:820px){ .g2,.g11{grid-template-columns:1fr;} }
+  .kpi b { display:block; font-size:26px; line-height:1.1; }
+  .kpi small { color:var(--muted); }
+  .chip { display:inline-block; font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; color:#fff; vertical-align:1px; }
+  .L1{background:var(--l1)} .L2{background:var(--l2)} .L3{background:var(--l3)} .L4{background:var(--l4)}
+  .st { font-size:11px; padding:1px 7px; border-radius:4px; border:1px solid var(--line); color:var(--muted); margin-left:6px; }
+  .st.new { color:var(--warn); border-color:var(--warn); }
+  ul.tree, ul.tree ul { list-style:none; margin:0; padding-left:22px; border-left:1px dashed var(--line); }
+  ul.tree { padding-left:0; border:0; }
+  .node { padding:4px 6px; border-radius:6px; cursor:pointer; }
+  .node:hover, .node.sel { background:color-mix(in srgb, var(--accent) 12%, transparent); }
+  .id { color:var(--muted); font-variant-numeric:tabular-nums; margin-right:4px; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+  textarea, input, select { width:100%; font:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  textarea { min-height:84px; resize:vertical; }
+  button { font:inherit; font-weight:600; padding:8px 14px; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
+  button { white-space:nowrap; }
+  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  .bar { height:10px; border-radius:5px; background:var(--line); overflow:hidden; }
+  .bar i { display:block; height:100%; }
+  .row { display:flex; gap:10px; align-items:center; margin:6px 0; }
+  .row .lab { width:76px; font-size:12px; color:var(--muted); }
+  .row .bar { flex:1; } .row .num { width:36px; text-align:right; font-variant-numeric:tabular-nums; }
+  .sev { font-weight:700; font-size:11px; }
+  .sev.error{color:var(--err)} .sev.warning{color:var(--warn)} .sev.info{color:var(--info)}
+  .muted { color:var(--muted); } .small { font-size:12px; }
+  .sprint { border:1px solid var(--line); border-radius:10px; padding:12px; background:var(--panel); }
+  .sprint h3 { margin:0 0 6px; font-size:14px; display:flex; justify-content:space-between; }
+  .ticket { border:1px solid var(--line); border-left:4px solid var(--l3); border-radius:6px; padding:6px 8px; margin:6px 0; font-size:13px; background:var(--bg); }
+  .pyramid { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .pyramid div { color:#fff; font-weight:600; text-align:center; padding:7px 0; border-radius:4px; font-size:13px; }
+  pre.code { background:var(--bg); padding:10px; border-radius:8px; overflow:auto; font-size:12px; }
+  .hide { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>RAM Studio <span>— Requirements Abstraction Model for agile teams</span></h1>
+  <nav id="nav"></nav>
+</header>
+<main id="app"></main>
+
+<script src="data.js"></script>
+<script>
+"use strict";
+/* ------------------------------------------------------------------ engine (mirror of ram/*.py) */
+const LV = {1:"Product", 2:"Feature", 3:"Function", 4:"Component"};
+const COLORS = {1:"var(--l1)",2:"var(--l2)",3:"var(--l3)",4:"var(--l4)"};
+const LEX = {1:RAM_DATA.lexicon.product, 2:RAM_DATA.lexicon.feature, 3:RAM_DATA.lexicon.function, 4:RAM_DATA.lexicon.component}
+for (const k in LEX) LEX[k] = LEX[k].map(([p,w]) => [new RegExp(p,"gi"), w]);
+const STOP = new Set("the a an of to and or in on for with by is are be shall can user system it that this as at from".split(" "));
+const tokens = t => new Set((t.toLowerCase().match(/[a-z][a-z\-]+/g)||[]).map(w=>w.replace(/s$/,"")).filter(w=>!STOP.has(w)&&w.length>2));
+const sim = (a,b) => { const A=tokens(a),B=tokens(b); let i=0; A.forEach(x=>{if(B.has(x))i++}); const u=A.size+B.size-i; return u?i/u:0; };
+
+function classify(text) {
+  const scores = {1:0,2:0,3:0,4:0}, cues = [];
+  for (const l of [1,2,3,4]) for (const [re,w] of LEX[l]) { re.lastIndex=0; let m; while ((m=re.exec(text))) { scores[l]+=w; cues.push(LV[l]+":"+m[0].toLowerCase()); if(m[0]==="")re.lastIndex++; } }
+  if (!Object.values(scores).some(Boolean)) scores[3] = 0.1;
+  const best = [1,2,3,4].sort((a,b)=>scores[b]-scores[a]||b-a)[0];
+  const tot = Object.values(scores).reduce((s,v)=>s+Math.exp(v),0);
+  return {level:best, scores, confidence:Math.exp(scores[best])/tot, cues};
+}
+
+let RS = JSON.parse(JSON.stringify(RAM_DATA.sample.requirements));
+const get = id => RS.find(r=>r.id===id);
+const kids = id => RS.filter(r=>r.parent===id);
+const anc = id => { const out=[], seen=new Set([id]); let c=get(id); while(c&&c.parent&&!seen.has(c.parent)){ const n=get(c.parent); if(!n)break; out.push(n); seen.add(n.id); c=n; } return out; };
+const desc = id => kids(id).flatMap(c=>[c,...desc(c.id)]);
+const text = r => (r.title+". "+(r.description||"")).trim();
+const score = r => +(r.value/(r.cost+0.5*r.risk)).toFixed(3);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function validate() {
+  const out=[]; const add=(code,sev,id,msg)=>out.push({code,sev,id,msg});
+  for (const r of RS) {
+    if (r.status==="new") { add("R010","info",r.id,"not yet worked up; excluded from planning"); continue; }
+    if (r.level!==1 && !r.parent) add("R001","error",r.id,LV[r.level]+" requirement has no parent");
+    else if (r.parent) { const p=get(r.parent);
+      if(!p) add("R002","error",r.id,"parent '"+r.parent+"' not found");
+      else if (p.level!==r.level-1) add("R003","warning",r.id,LV[r.level]+" linked to "+LV[p.level]+" ("+p.id+"); expected "+LV[Math.max(1,r.level-1)]); }
+    const c=classify(text(r));
+    if (c.level!==r.level && c.confidence>=0.55) add("R005","warning",r.id,"stated "+LV[r.level]+" but text reads like "+LV[c.level]+" ("+Math.round(c.confidence*100)+"%)");
+    if (r.level<=2 && !kids(r.id).length) add("R006","info",r.id,"no refinement below this requirement yet");
+    if (r.level>=3 && !(r.acceptance||[]).length) add("R007","warning",r.id,"no acceptance criteria recorded");
+  }
+  for (let i=0;i<RS.length;i++) for (let j=i+1;j<RS.length;j++) if (RS[i].level===RS[j].level && sim(text(RS[i]),text(RS[j]))>=0.6) add("R008","warning",RS[j].id,"near-duplicate of "+RS[i].id);
+  const o={error:0,warning:1,info:2};
+  return out.sort((a,b)=>o[a.sev]-o[b.sev]||a.id.localeCompare(b.id)||a.code.localeCompare(b.code));
+}
+
+const ACTIVE = new Set(["accepted","in_sprint","done","workup"]);
+function metrics() {
+  const act=RS.filter(r=>ACTIVE.has(r.status)), impl=act.filter(r=>r.level>=3);
+  const traced=impl.filter(r=>anc(r.id).some(a=>a.level===1));
+  const prods=RS.filter(r=>r.level===1);
+  return {
+    per:[1,2,3,4].map(l=>act.filter(r=>r.level===l).length),
+    trace: impl.length?traced.length/impl.length:0,
+    refine: prods.length?prods.filter(p=>desc(p.id).length).length/prods.length:0,
+    ac: impl.length?impl.filter(r=>(r.acceptance||[]).length).length/impl.length:0,
+    fresh: RS.filter(r=>r.status==="new").length, total:RS.length,
+    value: impl.filter(r=>r.status!=="done").reduce((s,r)=>s+r.value,0) };
+}
+
+function matrix() {
+  const leaves=RS.filter(r=>ACTIVE.has(r.status) && !kids(r.id).length);
+  const rows=leaves.map(l=>{ const ch={[l.level]:l.id}; anc(l.id).forEach(a=>{ if(!(a.level in ch)) ch[a.level]=a.id; }); return [1,2,3,4].map(k=>ch[k]||""); });
+  return rows.sort((a,b)=>a.map(x=>x||"~").join("|").localeCompare(b.map(x=>x||"~").join("|"),undefined,{numeric:true}));
+}
+
+function plan(cap=14, n=3) {
+  const cost = r => r.cost + kids(r.id).filter(c=>c.level===4).reduce((s,c)=>s+c.cost,0);
+  let pool=RS.filter(r=>r.level===3 && r.status==="accepted" && anc(r.id).some(a=>a.level===1))
+             .sort((a,b)=>score(b)-score(a)||a.id.localeCompare(b.id,undefined,{numeric:true}));
+  const out=[];
+  for (let s=1;s<=n;s++){ let used=0; const items=[]; for (const r of [...pool]) { const c=cost(r); if(used+c<=cap){items.push(r);used+=c;pool=pool.filter(x=>x!==r);} } out.push({name:"Sprint "+s,used,cap,items,cost}); }
+  out.push({name:"Backlog",used:pool.reduce((s,r)=>s+cost(r),0),cap:null,items:pool,cost});
+  return out;
+}
+
+function workup(r) {
+  const c=classify(text(r)); let parent=null, ps=0;
+  if (c.level>1) { const cands=RS.filter(x=>x.level===c.level-1 && x.id!==r.id && x.status!=="new");
+    cands.forEach(x=>{const s=sim(text(r),text(x)); if(!parent||s>ps){parent=x;ps=s;}}); }
+  const notes=[]; let up=[], down=[];
+  if (c.level>1) { if (parent) { const have=new Set([parent.level,...anc(parent.id).map(a=>a.level)]); for(let l=c.level-1;l>=1;l--) if(!have.has(l)) up.push(l);} else { for(let l=c.level-1;l>=1;l--) up.push(l); notes.push("No plausible parent found - write an abstracted statement one level up."); } }
+  if (c.level<3) { for(let l=c.level+1;l<=3;l++) down.push(l); notes.push("Too abstract for a sprint - refine to function level."); }
+  if (c.level===4) notes.push("Component-level detail - attach to a function-level parent as a constraint.");
+  if (c.confidence<0.4) notes.push("Low classifier confidence - confirm the level manually.");
+  if (parent && ps<0.1) notes.push("Suggested parent has weak lexical overlap - verify the link.");
+  return {c,parent,ps,up,down,notes};
+}
+
+/* ------------------------------------------------------------------ views */
+const chip = l => `<span class="chip L${l}">L${l} ${LV[l]}</span>`;
+const pct = x => Math.round(x*100)+"%";
+let selected = "F3";
+
+function viewModel() {
+  const m=metrics();
+  const roots=RS.filter(r=>!r.parent && r.level===1);
+  const orphans=RS.filter(r=>!r.parent && r.level!==1);
+  const node = r => `<li><div class="node ${r.id===selected?"sel":""}" data-id="${r.id}"><span class="id">${r.id}</span>${chip(r.level)} ${esc(r.title)}${r.status!=="accepted"?`<span class="st ${r.status}">${r.status}</span>`:""}</div>${kids(r.id).length?`<ul>${kids(r.id).map(node).join("")}</ul>`:""}</li>`;
+  const widths=[46,62,78,94];
+  const s=get(selected)||RS[0];
+  const chain=[...anc(s.id).reverse(),s];
+  return `
+  <div class="grid g4">
+    <div class="card kpi"><b>${m.total}</b><small>requirements (${m.fresh} awaiting work-up)</small></div>
+    <div class="card kpi"><b>${pct(m.trace)}</b><small>function/component traced to a product goal</small></div>
+    <div class="card kpi"><b>${pct(m.refine)}</b><small>product goals refined downward</small></div>
+    <div class="card kpi"><b>${pct(m.ac)}</b><small>with acceptance criteria</small></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h2>Abstraction tree</h2>
+      <ul class="tree">${roots.map(node).join("")}</ul>
+      ${orphans.length?`<h2 style="margin-top:14px">Outside the model (no parent)</h2><ul class="tree">${orphans.map(node).join("")}</ul>`:""}
+    </div>
+    <div>
+      <div class="card"><h2>RAM pyramid</h2>
+        <div class="pyramid">${[1,2,3,4].map((l,i)=>`<div style="width:${widths[i]}%;background:${COLORS[l]}">${LV[l]} · ${m.per[i]}</div>`).join("")}</div>
+        <p class="muted small">Goals sit at the top; detail grows towards the base. Each requirement links to one level above.</p></div>
+      <div class="card"><h2>${s.id} — ${esc(s.title)}</h2>
+        <p>${chip(s.level)}<span class="st">${s.status}</span></p>
+        <p>${esc(s.description||"")}</p>
+        <p class="small muted">Trace: ${chain.map(c=>`<b>${c.id}</b>`).join(" → ")}</p>
+        <p class="small">Value ${s.value} · Cost ${s.cost} · Risk ${s.risk} · Score <b>${score(s)}</b></p>
+        ${(s.acceptance||[]).length?`<p class="small"><b>Acceptance</b></p><ul class="small">${s.acceptance.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>`:`<p class="small muted">No acceptance criteria.</p>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+let draft = "Integrate with the Moodle LMS. Allow course deadlines from the learning management system to appear in the timetable.";
+function viewWorkup() {
+  const r={id:"NEW",title:draft,description:"",level:3,parent:null};
+  const w=workup(r);
+  return `
+  <div class="grid g2">
+    <div class="card"><h2>1 · Enter a raw requirement</h2>
+      <textarea id="draft">${esc(draft)}</textarea>
+      <div class="row"><button id="go">Analyse</button><button class="ghost" id="add">Add to model</button>
+        <span class="muted small">Quick samples:</span>
+        <select id="samples" style="width:auto">
+          <option value="">choose…</option>
+          <option>Students want the app to be fast.</option>
+          <option>Use Redis for caching timetable queries with a TTL of 10 minutes.</option>
+          <option>Reduce the cost to the organization of handling routine enquiries.</option>
+          <option>The user can export the timetable to a calendar file from the timetable screen.</option>
+        </select></div>
+      <h2 style="margin-top:14px">2 · Level scores</h2>
+      ${[1,2,3,4].map(l=>{const mx=Math.max(...Object.values(w.c.scores),1);return `<div class="row"><span class="lab">${LV[l]}</span><div class="bar"><i style="width:${w.c.scores[l]/mx*100}%;background:${COLORS[l]}"></i></div><span class="num">${w.c.scores[l].toFixed(1)}</span></div>`}).join("")}
+      <p class="small muted">Cues matched: ${w.c.cues.map(c=>`<code>${esc(c)}</code>`).join(" ")||"none"}</p>
+    </div>
+    <div class="card"><h2>3 · Work-up advice</h2>
+      <p>Suggested level: ${chip(w.c.level)} <b>${pct(w.c.confidence)}</b> confidence</p>
+      <p>Suggested parent: ${w.parent?`<b>${w.parent.id}</b> ${esc(w.parent.title)} <span class="muted small">(similarity ${w.ps.toFixed(2)})</span>`:"<span class='muted'>none — this is a goal-level statement or needs abstraction</span>"}</p>
+      <p>Abstract upward to: ${w.up.length?w.up.map(chip).join(" "):"<span class='muted'>—</span>"}</p>
+      <p>Refine downward to: ${w.down.length?w.down.map(chip).join(" "):"<span class='muted'>—</span>"}</p>
+      ${w.notes.map(n=>`<p class="small">• ${esc(n)}</p>`).join("")}
+    </div>
+  </div>
+  <div class="card"><h2>Raw requirements waiting in the intake queue</h2>
+    <table><tr><th>ID</th><th>Requirement</th><th>Predicted level</th><th>Suggested parent</th></tr>
+    ${RS.filter(r=>r.status==="new").map(r=>{const k=workup(r);return `<tr><td>${r.id}</td><td>${esc(r.title)}</td><td>${chip(k.c.level)}</td><td>${k.parent?k.parent.id+" · "+esc(k.parent.title):"—"}</td></tr>`}).join("")}
+    </table></div>`;
+}
+
+function viewValidate() {
+  const v=validate(); const n=s=>v.filter(i=>i.sev===s).length;
+  const rules={R001:"Orphan",R002:"Missing parent",R003:"Level skipped",R004:"Cycle",R005:"Level mismatch",R006:"Unrefined",R007:"No acceptance",R008:"Duplicate",R010:"Not worked up"};
+  return `<div class="grid g4">
+      <div class="card kpi"><b style="color:var(--err)">${n("error")}</b><small>errors</small></div>
+      <div class="card kpi"><b style="color:var(--warn)">${n("warning")}</b><small>warnings</small></div>
+      <div class="card kpi"><b style="color:var(--info)">${n("info")}</b><small>informational</small></div>
+    </div>
+    <div class="card"><h2>Model validation</h2><table><tr><th>Severity</th><th>Rule</th><th>Requirement</th><th>Finding</th></tr>
+    ${v.map(i=>`<tr><td class="sev ${i.sev}">${i.sev.toUpperCase()}</td><td>${i.code} <span class="muted small">${rules[i.code]||""}</span></td><td><b>${i.id}</b> <span class="muted small">${esc((get(i.id)||{}).title||"")}</span></td><td>${esc(i.msg)}</td></tr>`).join("")}
+    </table></div>`;
+}
+
+function viewTrace() {
+  const rows=matrix();
+  return `<div class="card"><h2>Traceability matrix (leaf → root chains)</h2>
+   <table><tr><th>${chip(1)}</th><th>${chip(2)}</th><th>${chip(3)}</th><th>${chip(4)}</th></tr>
+   ${rows.map(r=>`<tr>${r.map(x=>`<td>${x?`<b>${x}</b> <span class="muted small">${esc(get(x).title)}</span>`:`<span class="muted">—</span>`}</td>`).join("")}</tr>`).join("")}
+   </table></div>`;
+}
+
+let CAP=14;
+function viewPlan() {
+  const sp=plan(CAP,3);
+  return `<div class="card"><div class="row"><h2 style="margin:0">Sprint planning by cost–value score</h2>
+      <span style="flex:1"></span><label class="small muted">Capacity (points)</label>
+      <input id="cap" type="number" min="4" max="60" value="${CAP}" style="width:80px"></div>
+      <p class="muted small">Score = value ÷ (cost + 0.5 × risk). Component-level children travel with their function parent. Orphans and unprocessed items are excluded.</p></div>
+   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">
+   ${sp.map(s=>`<div class="sprint"><h3><span>${s.name}</span><span class="muted">${s.used}${s.cap?" / "+s.cap:""} pts</span></h3>
+      ${s.items.map(r=>`<div class="ticket"><b>${r.id}</b> ${esc(r.title)}<br><span class="muted small">score ${score(r)} · ${s.cost(r)} pts</span></div>`).join("")||"<span class='muted small'>empty</span>"}</div>`).join("")}
+   </div>`;
+}
+
+function viewMetrics() {
+  const m=metrics(); const max=Math.max(...m.per);
+  return `<div class="grid g11">
+    <div class="card"><h2>Requirements per abstraction level</h2>
+      ${[1,2,3,4].map(l=>`<div class="row"><span class="lab">${LV[l]}</span><div class="bar"><i style="width:${m.per[l-1]/max*100}%;background:${COLORS[l]}"></i></div><span class="num">${m.per[l-1]}</span></div>`).join("")}
+      <h2 style="margin-top:18px">Coverage</h2>
+      ${[["Traceability",m.trace],["Product refinement",m.refine],["Acceptance criteria",m.ac]].map(([k,v])=>`<div class="row"><span class="lab" style="width:130px">${k}</span><div class="bar"><i style="width:${v*100}%;background:var(--accent)"></i></div><span class="num">${pct(v)}</span></div>`).join("")}
+    </div>
+    <div class="card"><h2>Ranking (function level)</h2><table><tr><th>ID</th><th>Requirement</th><th>V</th><th>C</th><th>R</th><th>Score</th></tr>
+      ${RS.filter(r=>r.level===3).sort((a,b)=>score(b)-score(a)).slice(0,10).map(r=>`<tr><td>${r.id}</td><td>${esc(r.title)}</td><td>${r.value}</td><td>${r.cost}</td><td>${r.risk}</td><td><b>${score(r)}</b></td></tr>`).join("")}</table>
+      <p class="small muted">Top 10 of ${RS.filter(r=>r.level===3).length}. Export the model with the button below.</p>
+      <button class="ghost" id="export">Export JSON</button></div>
+  </div>`;
+}
+
+const ROUTES = {model:["Model",viewModel], workup:["Work-up",viewWorkup], validate:["Validation",viewValidate],
+                trace:["Traceability",viewTrace], plan:["Planning",viewPlan], metrics:["Metrics",viewMetrics]};
+
+function render() {
+  const key=(location.hash||"#model").slice(1); const [,fn]=ROUTES[key]||ROUTES.model;
+  document.getElementById("nav").innerHTML=Object.entries(ROUTES).map(([k,[t]])=>`<a href="#${k}" class="${k===key?"on":""}">${t}</a>`).join("");
+  document.getElementById("app").innerHTML=fn();
+  wire();
+}
+function wire() {
+  document.querySelectorAll(".node").forEach(n=>n.onclick=()=>{selected=n.dataset.id;render();});
+  const d=document.getElementById("draft");
+  if (d) { document.getElementById("go").onclick=()=>{draft=d.value;render();};
+    document.getElementById("samples").onchange=e=>{if(e.target.value){draft=e.target.value;render();}};
+    document.getElementById("add").onclick=()=>{ draft=d.value; const w=workup({id:"X",title:draft,description:""});
+      const id="U"+(RS.length+1); RS.push({id,title:draft,description:"",level:w.c.level,parent:w.parent?w.parent.id:null,status:"workup",value:5,cost:3,risk:3,source:"Studio",rationale:"",acceptance:[]});
+      selected=id; location.hash="#model"; }; }
+  const cap=document.getElementById("cap"); if (cap) cap.onchange=()=>{CAP=Math.max(4,+cap.value||14);render();};
+  const ex=document.getElementById("export"); if (ex) ex.onclick=()=>{const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([JSON.stringify({name:"CampusConnect",requirements:RS},null,2)],{type:"application/json"}));a.download="requirements.json";a.click();};
+}
+window.addEventListener("hashchange",render); render();
+</script>
+</body>
+</html>

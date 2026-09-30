@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Operationalising the Requirements Abstraction Model for Agile Teams</title>
+<style>
+  @page { size: A4; margin: 20mm 21mm 22mm 21mm;
+          @bottom-center { content: counter(page); font: 10pt "Times New Roman", serif; color:#444; }
+          @top-right { content: "Requirements Abstraction Model for Agile Teams"; font: italic 9pt "Times New Roman", serif; color:#777; } }
+  @page :first { @bottom-center { content: ""; } @top-right { content: ""; } }
+  html { font: 10.5pt/1.36 "Times New Roman", "Liberation Serif", serif; color:#111; }
+  body { margin:0; text-align:justify; hyphens:auto; }
+  h1 { font-size:14pt; margin:14pt 0 4pt; break-after:avoid; }
+  h2 { font-size:11.5pt; margin:9pt 0 3pt; break-after:avoid; }
+  h3 { font-size:11pt; font-style:italic; margin:9pt 0 3pt; break-after:avoid; }
+  p { margin:0 0 5pt; orphans:3; widows:3; }
+  .pb { break-before:page; } .pb h1:first-child { margin-top:0; }
+  #s1 { break-before:page; }
+  /* title page */
+  .title { height:240mm; display:flex; flex-direction:column; justify-content:space-between; text-align:center; break-after:page; }
+  .title .top { font-size:12pt; letter-spacing:.5pt; margin-top:6mm; }
+  .title h1 { font-size:24pt; line-height:1.2; margin:0 0 10pt; }
+  .title .sub { font-size:14pt; font-style:italic; color:#333; }
+  .title .meta { text-align:left; margin:0 auto; font-size:11.5pt; line-height:1.9; }
+  .title .meta td { padding:0 8pt 0 0; vertical-align:top; } .title .meta td:first-child { font-weight:bold; }
+  .title hr { border:0; border-top:1.5pt solid #222; width:55%; margin:14pt auto; }
+  .abs { margin:0 10mm; } .abs h2 { text-align:center; }
+  .kw { margin:4pt 10mm 0; font-size:10.5pt; }
+  .toc { margin-top:10pt; } .toc h2 { font-size:13pt; }
+  .toc ol { list-style:none; padding:0; margin:0; }
+  .toc li { display:flex; gap:4pt; margin:1.6pt 0; font-size:10.5pt; }
+  .toc li .t { flex:none; } .toc li .d { flex:1; border-bottom:1pt dotted #777; margin-bottom:3pt; } .toc li.sub { padding-left:14pt; font-size:10pt; }
+  figure { margin:5pt auto; text-align:center; break-inside:avoid-page; }
+  figure img { max-width:100%; border:.5pt solid #ccc; }
+  figure.nb img { border:0; }
+  figcaption { font-size:9.5pt; margin-top:3pt; text-align:center; font-style:normal; }
+  figcaption b { font-weight:bold; }
+  table.d { border-collapse:collapse; margin:6pt auto 8pt; font-size:9.5pt; width:100%; break-inside:avoid; }
+  table.d th, table.d td { border-top:.6pt solid #555; border-bottom:.6pt solid #555; padding:2.4pt 5pt; text-align:left; vertical-align:top; }
+  table.d th { background:#f0f0f0; border-top:1pt solid #222; border-bottom:1pt solid #222; }
+  table.d td.n, table.d th.n { text-align:right; }
+  caption { caption-side:top; font-size:9.5pt; text-align:center; padding-bottom:3pt; }
+  code { font:9.3pt Consolas,"Courier New",monospace; background:#f4f4f4; padding:0 2pt; }
+  pre { font:8.4pt/1.25 Consolas,"Courier New",monospace; background:#f6f6f6; border:.5pt solid #ccc; padding:5pt 7pt; white-space:pre-wrap; break-inside:avoid; margin:5pt 0 8pt; text-align:left; }
+  ol.refs { padding-left:0; list-style:none; font-size:9.5pt; text-align:left; }
+  ol.refs li { padding-left:22pt; text-indent:-22pt; margin-bottom:2.5pt; }
+  .eq { text-align:center; font-style:italic; margin:4pt 0 7pt; }
+  .note { font-size:10pt; border-left:2pt solid #999; padding-left:8pt; margin:6pt 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================== TITLE PAGE ============================== -->
+<section class="title">
+  <div class="top">MINI-PROJECT REPORT</div>
+  <div>
+    <h1>Operationalising the Requirements Abstraction Model for Agile Teams</h1>
+    <div class="sub">Design, implementation and evaluation of a traceable, machine-checkable requirements model with sprint planning support</div>
+    <hr>
+  </div>
+  <table class="meta">
+    <tr><td>Author</td><td>[Student name]</td></tr>
+    <tr><td>Student ID</td><td>[Registration number]</td></tr>
+    <tr><td>Programme</td><td>[Degree / programme]</td></tr>
+    <tr><td>Course</td><td>Software Engineering / Requirements Engineering</td></tr>
+    <tr><td>Supervisor</td><td>[Supervisor name]</td></tr>
+    <tr><td>Institution</td><td>[University / department]</td></tr>
+    <tr><td>Date</td><td>30 September 2026</td></tr>
+    <tr><td>Source code</td><td>github.com/nakultt/agile-requirements-abstraction-model</td></tr>
+  </table>
+  <div style="font-size:10pt;color:#555">Software version 1.0.0 · MIT licence</div>
+</section>
+
+<!-- ============================== ABSTRACT + TOC ============================== -->
+<section class="abs">
+  <h2>Abstract</h2>
+  <p>Agile backlogs routinely mix requirements of very different granularity: strategic goals sit beside screen-level behaviour and low-level performance constraints. This heterogeneity makes backlogs hard to prioritise, weakens traceability from code to business purpose and lets duplicates and orphaned items slip into sprints. The Requirements Abstraction Model (RAM) of Gorschek and Wohlin (2006) addresses this by organising requirements into four abstraction levels (Product, Feature, Function and Component) and prescribing a <em>work-up</em> process that abstracts every requirement upwards to a product goal and refines it downwards to implementable detail. RAM was proposed for market-driven product development, however, and offers no tooling that fits an agile team's sprint cadence.</p>
+  <p>This report presents <em>RAM Studio</em>, a dependency-free toolkit that operationalises RAM for agile teams. It comprises a Python library and command-line interface, a single-page web application, and a synthetic case study (<em>CampusConnect</em>, 44 requirements). The toolkit provides a transparent lexicon-based abstraction-level classifier, a work-up engine that advises on parent placement and on missing abstraction or refinement levels, ten structural validation rules, a traceability matrix, coverage metrics and a cost–value sprint planner. The implementation is verified by 22 automated tests. On the case study, the validator detected all three seeded defects (an orphan, a skipped level and a duplicate), 96% of implementable requirements traced to a product goal, and the planner distributed 40 accepted requirements over three 14-point sprints. The classifier reached 100% accuracy on a 48-statement labelled set written alongside its lexicon but only 50% on a 16-statement held-out set, an honest indication that lexical cues alone do not generalise to abstractly phrased goals and features. We discuss this result, the threats to validity, and directions for extending the approach.</p>
+</section>
+<p class="kw"><b>Keywords:</b> requirements engineering; requirements abstraction model; agile; product backlog; traceability; requirements classification; sprint planning.</p>
+
+<section class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><span class="t">1&nbsp; Introduction</span><span class="d"></span><span>{{pg:s1}}</span></li>
+    <li><span class="t">2&nbsp; Background and Related Work</span><span class="d"></span><span>{{pg:s2}}</span></li>
+    <li><span class="t">3&nbsp; Research Questions and Method</span><span class="d"></span><span>{{pg:s3}}</span></li>
+    <li><span class="t">4&nbsp; RAM Adapted for Agile Teams</span><span class="d"></span><span>{{pg:s4}}</span></li>
+    <li><span class="t">5&nbsp; System Design and Implementation</span><span class="d"></span><span>{{pg:s5}}</span></li>
+    <li><span class="t">6&nbsp; Case Study: CampusConnect</span><span class="d"></span><span>{{pg:s6}}</span></li>
+    <li><span class="t">7&nbsp; Results: The Toolkit in Use</span><span class="d"></span><span>{{pg:s7}}</span></li>
+    <li><span class="t">8&nbsp; Evaluation</span><span class="d"></span><span>{{pg:s8}}</span></li>
+    <li><span class="t">9&nbsp; Discussion and Threats to Validity</span><span class="d"></span><span>{{pg:s9}}</span></li>
+    <li><span class="t">10&nbsp; Conclusion and Future Work</span><span class="d"></span><span>{{pg:s10}}</span></li>
+    <li><span class="t">References</span><span class="d"></span><span>{{pg:refs}}</span></li>
+    <li><span class="t">Appendix A&nbsp; Reproducing the Results</span><span class="d"></span><span>{{pg:appA}}</span></li>
+  </ol>
+</section>
+
+<!-- ============================== 1 INTRODUCTION ============================== -->
+<section class="pb" id="s1">
+<h1>1&nbsp; Introduction</h1>
+<h2>1.1&nbsp; Motivation</h2>
+<p>Agile methods reduced the ceremony of requirements documentation, but they did not remove the underlying difficulty of deciding <em>what</em> to build and <em>why</em>. Empirical studies of agile requirements practice report that teams replace heavyweight specifications with lightweight artefacts such as user stories, face-to-face communication and a continuously re-prioritised backlog, and they discuss the difficulties this brings, among them limited documentation (Cao &amp; Ramesh, 2008). A recurring symptom is a backlog that is flat: one list in which <q>improve student retention</q> and <q>expire session tokens after 20 minutes</q> compete for the same attention even though they differ by several orders of magnitude in abstraction.</p>
+<p>A flat backlog has practical consequences. Product owners cannot tell whether a set of stories actually realises a goal; developers receive stories whose rationale is invisible; estimation is distorted because items of different granularity are compared as if they were commensurable; and quality requirements are either forgotten or buried in prose. Requirements engineering research calls the underlying phenomenon the <em>requirements gap</em>: stakeholders state needs at varying levels of abstraction, and unless these are explicitly related, the organisation cannot reason about coverage, cost or value (Regnell &amp; Brinkkemper, 2005; Gorschek &amp; Wohlin, 2006).</p>
+<h2>1.2&nbsp; Problem statement</h2>
+<p>The Requirements Abstraction Model (RAM) was designed precisely to close this gap, but it was published as a process model supported by document templates. Agile teams need something lighter and executable: a model they can keep in version control, validate on every change, query for traceability and feed into sprint planning. To our knowledge there is no freely available, dependency-free tool that encodes RAM's four levels and its work-up rules in a form that can be checked automatically. This project closes that gap at the scale of a small team or a teaching environment.</p>
+<h2>1.3&nbsp; Objectives and contributions</h2>
+<p>The objective is to design, implement and evaluate a toolkit that makes RAM usable in an agile workflow. The contributions are:</p>
+<ol style="margin:0 0 6pt 0; padding-left:22pt">
+  <li>An <b>agile interpretation of RAM</b> that maps the four abstraction levels to Scrum artefacts and formalises the work-up activities as rules (Section 4).</li>
+  <li>A <b>reference implementation</b>: a Python library with a command-line interface and a browser-based studio, sharing a single classifier lexicon (Section 5).</li>
+  <li>A <b>transparent abstraction-level classifier</b> and an <b>empirical report of its limits</b>, including a held-out evaluation that we deliberately did not tune against (Section 8).</li>
+  <li>A <b>validation rule set</b> (R001–R010) that detects orphaned, duplicated, mis-levelled and unrefined requirements, and a <b>cost–value sprint planner</b> that only plans requirements traceable to a product goal.</li>
+  <li>A <b>synthetic but complete case study</b>, <em>CampusConnect</em>, with seeded defects, released together with the code so that every figure in this report can be reproduced.</li>
+</ol>
+<h2>1.4&nbsp; Structure of the report</h2>
+<p>Section 2 reviews related work and Section 3 states the research questions and method. Sections 4 and 5 present the agile adaptation of RAM and its implementation; Section 6 describes the case study; Section 7 shows the toolkit in use; Section 8 reports the evaluation. Section 9 discusses findings and threats to validity and Section 10 concludes.</p>
+</section>
+
+<!-- ============================== 2 BACKGROUND ============================== -->
+<section id="s2">
+<h1>2&nbsp; Background and Related Work</h1>
+<h2>2.1&nbsp; Requirements in agile development</h2>
+<p>The Agile Manifesto (Beck et al., 2001) values working software and responding to change over comprehensive documentation. In practice, requirements are captured as user stories (Cohn, 2004), short statements of the form <q>as a &lt;role&gt; I want &lt;capability&gt; so that &lt;benefit&gt;</q>, collected in a Product Backlog that the Product Owner orders and the team refines (Schwaber &amp; Sutherland, 2020). Good stories are expected to be independent, negotiable, valuable, estimable, small and testable (Wake, 2003). Scaled agile frameworks add a hierarchy of themes, epics, features and stories (Leffingwell, 2011), but the levels are conventions rather than checked structure.</p>
+<p>Empirical work shows both the benefits and the risks. Cao and Ramesh (2008) studied requirements practice in agile organisations and describe practices such as face-to-face communication, iterative requirements and prototyping, together with the challenges of working without heavyweight documentation. Such challenges are closely related to the loss of abstraction structure: when goals, features and constraints are not explicitly related, reasoning about them is left to tacit knowledge.</p>
+<h2>2.2&nbsp; Market-driven requirements engineering and the abstraction problem</h2>
+<p>In market-driven development, requirements arrive continuously from many sources (customers, marketing, support, developers, competitors) and are not bound to a single customer contract (Regnell &amp; Brinkkemper, 2005). They are stated at very different levels of abstraction and with very different detail. Sommerville (2016) and Wiegers and Beatty (2013) distinguish business, user and system requirements, but these describe document types rather than a working backlog structure; ISO/IEC/IEEE 29148 (IEEE, 2018) defines attributes of well-formed requirements yet assumes a consistent level of abstraction within a set.</p>
+<h2>2.3&nbsp; The Requirements Abstraction Model</h2>
+<p>Gorschek and Wohlin (2006) proposed RAM as a response to requirements that arrive in very different shapes and at very different levels of detail. RAM has two main elements. First, four <em>abstraction levels</em>: <b>Product</b> (goals and strategy of the product and organisation), <b>Feature</b> (the features the product offers), <b>Function</b> (what a user can do or the system does, an actionable statement of need) and <b>Component</b> (detailed, design-near, often measurable statements). Second, a <b>work-up</b> process in which each incoming requirement is (1) placed at an abstraction level, (2) abstracted upwards until it is connected to a product-level statement (or rejected as out of scope), and (3) broken down until at least one level of implementable detail exists. The model was evaluated by its authors in industrial pilots and is widely cited in the requirements-engineering literature as an answer to the abstraction problem in product development.</p>
+<p>Two properties of RAM make it attractive for agile teams. The upward step provides a <em>why</em> for every item and gives a principled way to reject work that supports no goal. The downward step provides a <em>how</em> and ensures that only sufficiently refined items reach a sprint. Both steps are compatible with backlog refinement as described in the Scrum Guide. What RAM does not provide is tool support designed for continuous, repository-based work.</p>
+<h2>2.4&nbsp; Prioritisation and traceability</h2>
+<p>Prioritisation in the toolkit follows the cost–value approach of Karlsson and Ryan (1997): requirements are ranked by the ratio of their value to their cost. We extend the denominator with a half-weighted risk term, a pragmatic choice that penalises risky items without letting risk dominate. Traceability, the ability to follow a requirement both forwards to its realisation and backwards to its origin (Gotel &amp; Finkelstein, 1994), is obtained in RAM by construction, because every requirement links to exactly one parent one level above. The toolkit exposes this as a leaf-to-root traceability matrix and as a coverage metric.</p>
+<h2>2.5&nbsp; Research gap</h2>
+<p>Agile practice lacks a checked requirements structure; RAM supplies a structure but not an executable, agile-friendly implementation. This project occupies the intersection: an executable RAM whose rules can be evaluated automatically and whose output feeds sprint planning.</p>
+</section>
+
+<!-- ============================== 3 METHOD ============================== -->
+<section id="s3">
+<h1>3&nbsp; Research Questions and Method</h1>
+<h2>3.1&nbsp; Research questions</h2>
+<p><b>RQ1.</b> Can RAM's four abstraction levels and work-up activities be operationalised as a machine-checkable model that fits an agile backlog?</p>
+<p><b>RQ2.</b> How accurately can a transparent, lexicon-based classifier assign requirement statements to the four RAM levels, and where does it fail?</p>
+<p><b>RQ3.</b> Which structural defects can automated work-up rules detect, and how does the resulting model support sprint planning?</p>
+<h2>3.2&nbsp; Research approach</h2>
+<p>The work follows the design-science paradigm (Hevner, March, Park &amp; Ram, 2004): an artefact is built to address an identified problem and is evaluated for utility. The evaluation has three parts, each mapped to a research question. <em>Construction</em> (RQ1) is demonstrated by the implemented data model and rules together with an automated test suite. <em>Classifier evaluation</em> (RQ2) uses two hand-labelled sets of requirement statements. The first (<em>labelled set</em>, 48 statements, 12 per level) was written alongside the lexicon and is therefore optimistic; the second (<em>held-out set</em>, 16 statements, 4 per level) was written afterwards in different wording and was never used for tuning. Accuracy, precision, recall and F1 are reported per level. <em>Case-study analysis</em> (RQ3) applies the validator, metrics and planner to CampusConnect and checks whether seeded defects are found.</p>
+<h2>3.3&nbsp; Design principles</h2>
+<p>Four principles guided the design: <b>transparency</b> (every classifier decision is explained by the cues that fired), <b>portability</b> (plain JSON and the standard library only), a <b>single source of truth</b> (one lexicon file drives both the Python and JavaScript classifiers) and <b>advice rather than automation</b> (the tools suggest but never change the model without a human decision).</p>
+</section>
+
+<!-- ============================== 4 RAM FOR AGILE ============================== -->
+<section id="s4">
+<h1>4&nbsp; RAM Adapted for Agile Teams</h1>
+<h2>4.1&nbsp; Levels and their agile counterparts</h2>
+<p>Figure 1 shows the four levels as a pyramid: a small number of abstract goals at the top, growing in number and detail towards the base. Table 1 relates each level to familiar agile artefacts. The mapping is an interpretation, not part of the original model: the Product Goal of the Scrum Guide corresponds to RAM's Product level, epics and features to the Feature level, user stories or Product Backlog Items to the Function level, and acceptance criteria, non-functional requirements and technical tasks to the Component level.</p>
+<figure class="nb"><img src="../docs/figures/fig1-ram-pyramid.png" style="width:100mm"><figcaption><b>Figure 1.</b> The four RAM abstraction levels used by the toolkit.</figcaption></figure>
+<table class="d"><caption><b>Table 1.</b> RAM levels, typical content and agile counterparts.</caption>
+<tr><th>Level</th><th>Typical content</th><th>Example (CampusConnect)</th><th>Agile counterpart</th></tr>
+<tr><td>L1 Product</td><td>Goals, strategy, business value</td><td>Reduce administrative cost of student support</td><td>Product Goal</td></tr>
+<tr><td>L2 Feature</td><td>Capabilities that realise goals</td><td>Room and resource booking</td><td>Epic / feature</td></tr>
+<tr><td>L3 Function</td><td>User-visible behaviour</td><td>The system shall validate that a room is not double-booked</td><td>User story / PBI</td></tr>
+<tr><td>L4 Component</td><td>Measurable, design-near constraints</td><td>Unique constraint on room_id and time_slot</td><td>Acceptance criterion / NFR / task</td></tr>
+</table>
+<h2>4.2&nbsp; Work-up as explicit rules</h2>
+<p>The toolkit turns the three work-up activities into operations on the model. <b>Placement</b> assigns a level, either by the analyst or as a suggestion from the classifier. <b>Abstraction</b> links the requirement to a parent one level above. The engine proposes the most similar existing parent and lists the levels that would still have to be written to reach a product goal. <b>Refinement</b> reports the levels below the requirement that are needed before it can enter a sprint: anything above the Function level is too abstract to schedule.</p>
+<p>Requirements enter the model with status <code>new</code>. A requirement leaves that status only when the analyst accepts its placement; new items are excluded from validation errors, metrics and planning, which reflects RAM's premise that raw requirements should not drive development before work-up. Section 5.4 lists the structural rules that define a well-formed model.</p>
+<h2>4.3&nbsp; Prioritisation and planning</h2>
+<p>Only Function-level requirements are scheduled, because they are the level at which a team commits to behaviour. Each has a business value <i>v</i> and a risk <i>r</i> (1–10) and an effort estimate <i>c</i> (story-point proxy). The priority score is</p>
+<p class="eq">score = v / (c + 0.5 · r)</p>
+<p>The cost of a Function includes the cost of its Component-level children, since these constraints must be met for the function to be done. The planner fills each sprint greedily in descending score order up to the capacity, skipping items that do not fit. Only requirements whose ancestor chain reaches a Product-level goal are eligible, which operationalises RAM's rule that work unrelated to a goal should not be built.</p>
+</section>
+
+<!-- ============================== 5 SYSTEM ============================== -->
+<section id="s5">
+<h1>5&nbsp; System Design and Implementation</h1>
+<h2>5.1&nbsp; Architecture</h2>
+<p>The system has five layers (Figure 2). Requirement sources feed a JSON repository. The <em>classifier</em> and <em>work-up engine</em> analyse incoming items; the <em>validator</em> checks the model; <em>analysis</em> and the <em>sprint planner</em> derive traceability, metrics and plans. Two interfaces expose the same functions: a command-line interface (<code>python -m ram</code>) and the RAM Studio web application. The implementation is deliberately small (about 540 lines of library code and 313 lines of web application) so that teams can read and adapt it.</p>
+<figure class="nb"><img src="../docs/figures/fig2-architecture.png" style="width:118mm"><figcaption><b>Figure 2.</b> Architecture of RAM Studio.</figcaption></figure>
+<h2>5.2&nbsp; Data model</h2>
+<p>A <code>Requirement</code> has an identifier, title, description, level (an integer enumeration 1–4), an optional parent identifier, a status (<code>new</code>, <code>workup</code>, <code>accepted</code>, <code>in_sprint</code>, <code>done</code>, <code>rejected</code>), value, cost and risk estimates, a source, a rationale and a list of acceptance criteria. A <code>RequirementSet</code> stores requirements by identifier and provides the hierarchy operations <code>children</code>, <code>ancestors</code> (robust against cycles and dangling parents) and <code>descendants</code>, plus JSON persistence. Using parent links rather than nested documents lets the same requirement be re-parented and makes defects such as orphans and skipped levels expressible and therefore detectable.</p>
+<h2>5.3&nbsp; Abstraction-level classifier</h2>
+<p>The classifier scores a statement against a weighted lexicon of regular expressions for each level. Product cues include <q>goal</q>, <q>strategy</q>, <q>market</q>, <q>organisation</q>, <q>retention</q> and verbs such as <q>increase</q> and <q>reduce</q>. Feature cues include <q>feature</q>, <q>module</q>, <q>portal</q>, <q>support</q>, <q>provide</q> and <q>allow</q>. Function cues include <q>shall</q>, <q>the user can</q>, interface nouns such as <q>button</q> and <q>screen</q> and action verbs such as <q>display</q> and <q>validate</q>. Component cues include numbers with units (<q>200 ms</q>, <q>50 MB</q>, <q>70%</q>), protocol and technology terms (<q>TLS</q>, <q>JSON</q>, <q>Redis</q>) and design terms (<q>table</q>, <q>index</q>, <q>queue</q>). The level with the highest total weight wins; ties resolve to the more concrete level, and a statement with no cue at all defaults to Function with a very low score. Confidence is the softmax share of the winning level, and all matched cues are returned, which makes each decision auditable. On the case-study texts the classifier processes roughly 8,000 statements per second on a laptop, and the validator runs in about 8 ms for 44 requirements.</p>
+<h2>5.4&nbsp; Work-up engine and validator</h2>
+<p>Parent suggestion computes the Jaccard similarity (Jaccard, 1912) between the stemmed, stop-word-filtered token sets of the requirement and of every candidate one level above, and proposes the maximum. A weak-overlap note is attached when the similarity is below 0.1, prompting manual verification. The validator implements the ten rules in Table 2. Duplicates are detected by the same similarity measure with a threshold of 0.6 within a level.</p>
+<table class="d"><caption><b>Table 2.</b> Validation rules.</caption>
+<tr><th>Rule</th><th>Severity</th><th>Condition</th></tr>
+<tr><td>R001</td><td>Error</td><td>Non-product requirement without a parent (orphan)</td></tr>
+<tr><td>R002</td><td>Error</td><td>Parent identifier does not exist</td></tr>
+<tr><td>R003</td><td>Warning</td><td>Parent is not exactly one level above (skipped or inverted level)</td></tr>
+<tr><td>R004</td><td>Error</td><td>Cycle in the parent chain</td></tr>
+<tr><td>R005</td><td>Warning</td><td>Stated level disagrees with a confident classification (≥ 55%)</td></tr>
+<tr><td>R006</td><td>Info</td><td>Product or feature without any refinement below it</td></tr>
+<tr><td>R007</td><td>Warning</td><td>Function or component without acceptance criteria</td></tr>
+<tr><td>R008</td><td>Warning</td><td>Near-duplicate of another requirement at the same level (Jaccard ≥ 0.6)</td></tr>
+<tr><td>R009</td><td>Warning</td><td>Title empty or longer than 90 characters</td></tr>
+<tr><td>R010</td><td>Info</td><td>Requirement still in status <code>new</code> (outside the model)</td></tr>
+</table>
+<h2>5.5&nbsp; Analysis, planner and interfaces</h2>
+<p>The traceability matrix lists one row per leaf, filling each column with the identifier of the ancestor at that level. The metrics module reports the number of active requirements per level, <em>traceability coverage</em> (the proportion of Function and Component requirements with a Product ancestor), <em>product refinement coverage</em> (the proportion of Product goals with descendants) and <em>acceptance coverage</em>. The command-line interface exposes <code>tree</code>, <code>validate</code>, <code>matrix</code>, <code>metrics</code>, <code>rank</code>, <code>plan</code>, <code>workup</code> and <code>classify</code>. The web application (RAM Studio) re-implements the same algorithms in JavaScript on top of the shared lexicon and adds interactive exploration: selecting a requirement shows its trace, the work-up view lets an analyst paste a raw requirement and add it to the model, and the sprint capacity can be changed live. A generator script embeds the lexicon and sample model into <code>data.js</code>, so the web application needs no server.</p>
+<h2>5.6&nbsp; Verification</h2>
+<p>Twenty-two automated tests (<code>unittest</code>, standard library) cover hierarchy navigation, persistence round-trips, cycle safety, one test per level for the classifier, each validation rule, the seeded defects in the sample model, work-up advice, the priority formula, traceability rows, metrics, planner capacity limits, exclusion of orphans and deterministic tie-breaking. All tests pass. Comparing the two implementations exposed one defect: the Python planner broke score ties by string order (<q>FN12</q> before <q>FN5</q>) while the web planner used natural order. Both now use natural ordering, guarded by a regression test.</p>
+</section>
+
+<!-- ============================== 6 CASE STUDY ============================== -->
+<section id="s6">
+<h1>6&nbsp; Case Study: CampusConnect</h1>
+<p>To exercise the toolkit end to end we constructed <em>CampusConnect</em>, a synthetic requirement set for a university mobile app. It is deliberately realistic in structure but is <b>not</b> drawn from a real project; Section 9 discusses this limitation. The set contains 44 requirements (Table 3): four product goals (student engagement, administrative cost, trusted data handling, a competitive mobile-first platform), eight features, seventeen functions and eleven components, plus four raw requirements with status <code>new</code> that stand for unprocessed intake: a vague remark (<q>students want the app to be fast</q>), an integration request, a technology decision (<q>use Redis for caching</q>) and a repeat of an existing function.</p>
+<table class="d"><caption><b>Table 3.</b> Composition of the CampusConnect model.</caption>
+<tr><th>Level</th><th class="n">Active</th><th class="n">New (raw)</th><th>Examples</th></tr>
+<tr><td>L1 Product</td><td class="n">4</td><td class="n">0</td><td>P1 Improve student engagement with campus services</td></tr>
+<tr><td>L2 Feature</td><td class="n">8</td><td class="n">0</td><td>F5 Single sign-on and identity management</td></tr>
+<tr><td>L3 Function</td><td class="n">17</td><td class="n">4</td><td>FN11 Log in with university credentials</td></tr>
+<tr><td>L4 Component</td><td class="n">11</td><td class="n">0</td><td>C6 OAuth 2.0 with PKCE, 15-minute tokens</td></tr>
+<tr><td><b>Total</b></td><td class="n"><b>40</b></td><td class="n"><b>4</b></td><td></td></tr>
+</table>
+<p>Three defects were <em>seeded</em> to test the validator: <b>FN16</b> (export timetable to a calendar) has no parent, so it is an orphan; <b>C11</b> (API rate limiting) is attached directly to the feature <q>Room and resource booking</q>, skipping the Function level; and <b>FN17</b> repeats the wording of <b>FN5</b> (choose notification categories). Each requirement carries value, cost and risk estimates and, where applicable, acceptance criteria; three Function and Component items (FN10, FN15 and C10) intentionally lack criteria. The estimates are illustrative and were assigned by the author, not elicited from stakeholders.</p>
+<p>Two further data sets were prepared for the classifier evaluation (Section 8.1): a 48-statement <em>labelled set</em> and a 16-statement <em>held-out set</em>, each balanced across the four levels.</p>
+</section>
+
+<!-- ============================== 7 RESULTS ============================== -->
+<section id="s7">
+<h1>7&nbsp; Results: The Toolkit in Use</h1>
+<p>This section shows the toolkit operating on CampusConnect. All screenshots were captured automatically from the running application or real command-line output by scripts in the repository.</p>
+<h2>7.1&nbsp; Model view</h2>
+<p>Figure 3 shows the model view. The top row reports four headline indicators. The abstraction tree shows every requirement under its parent, colour-coded by level, with status badges for items outside the model; requirements with no parent appear in a separate <q>outside the model</q> list. The right-hand panel shows the RAM pyramid with live counts and the details of the selected requirement, including its trace to a product goal and its score.</p>
+<figure><img src="../docs/screenshots/01-model.png" style="width:92mm"><figcaption><b>Figure 3.</b> RAM Studio, model view: abstraction tree (excerpt), pyramid counts and selected-requirement details.</figcaption></figure>
+<h2>7.2&nbsp; Work-up view</h2>
+<p>Figure 4 shows work-up advice for the raw requirement <q>Integrate with the Moodle LMS</q>. The classifier assigns the Feature level with 76% confidence, showing the cue scores that produced the decision. The engine recommends refinement down to the Function level before scheduling and warns that the suggested parent P1 has weak lexical overlap, so the analyst must verify the link. The queue at the bottom lists the four raw requirements with their predicted level and suggested parent.</p>
+<figure><img src="../docs/screenshots/02-workup.png" style="width:92mm"><figcaption><b>Figure 4.</b> Work-up view: level scores, matched cues, parent suggestion and abstraction/refinement advice.</figcaption></figure>
+<h2>7.3&nbsp; Validation</h2>
+<p>Figure 5 shows the validation report for CampusConnect: one error, eight warnings and four informational messages. All three seeded defects were found: FN16 (R001 orphan), C11 (R003 skipped level) and FN17 (R008 duplicate of FN5; it is also reported against the raw requirement N4, which repeats the same text). The validator additionally reported three items without acceptance criteria (R007) and, unseeded, a level mismatch for feature F1 (R005): its description (<q>personal timetable management and the discovery of campus events</q>) reads like a goal to the classifier. This is a legitimate prompt for discussion rather than a false alarm, although it also illustrates the cost of lexical classification.</p>
+<figure><img src="../docs/screenshots/03-validation.png" style="width:92mm"><figcaption><b>Figure 5.</b> Model validation report with severity, rule, affected requirement and finding.</figcaption></figure>
+<h2>7.4&nbsp; Traceability and planning</h2>
+<p>Figure 6 shows the traceability matrix, one row per leaf-to-root chain. The orphan FN16 is immediately visible as a row whose Product and Feature cells are empty, and C11 appears with an empty Function cell. Figure 7 shows the sprint board for a capacity of 14 points.</p>
+<figure><img src="../docs/screenshots/04-traceability.png" style="width:92mm"><figcaption><b>Figure 6.</b> Traceability matrix (excerpt). Empty cells (—) expose orphans and skipped levels.</figcaption></figure>
+<figure><img src="../docs/screenshots/05-planning.png" style="width:92mm"><figcaption><b>Figure 7.</b> Sprint planning board at a capacity of 14 points.</figcaption></figure>
+<p>Table 4 lists the plan. Sprint 1 contains the three highest-scoring functions (timetable display, add-to-timetable and login) and fills the sprint exactly. Notification of lecture cancellations (FN4) has high value (9) but a cost of 8 points once its delivery-pipeline component is included, so it lands in the backlog; this is a trade-off the ranking makes visible. The orphan FN16 and the four raw items were correctly excluded. One weakness is visible too: the duplicate FN17 was scheduled, because duplicate detection is advisory and does not block planning.</p>
+<table class="d"><caption><b>Table 4.</b> Generated sprint plan (capacity 14 points; points include component children).</caption>
+<tr><th>Sprint</th><th class="n">Points</th><th>Requirements (in planning order)</th></tr>
+<tr><td>Sprint 1</td><td class="n">14 / 14</td><td>FN1, FN2, FN11</td></tr>
+<tr><td>Sprint 2</td><td class="n">14 / 14</td><td>FN5, FN6, FN7, FN8</td></tr>
+<tr><td>Sprint 3</td><td class="n">13 / 14</td><td>FN9, FN12, FN17, FN3</td></tr>
+<tr><td>Backlog</td><td class="n">33</td><td>FN4, FN13, FN14, FN15, FN10</td></tr>
+</table>
+<h2>7.5&nbsp; Metrics and command-line interface</h2>
+<p>Figure 8 shows the metrics view, with the distribution across levels, three coverage indicators and the ranking of Function-level requirements. Figure 9 shows the same model through the command-line interface, which is suitable for continuous integration: <code>python -m ram validate --strict</code> returns a non-zero exit code when errors are present.</p>
+<figure><img src="../docs/screenshots/06-metrics.png" style="width:92mm"><figcaption><b>Figure 8.</b> Metrics view: requirements per level, coverage indicators and ranking.</figcaption></figure>
+<figure><img src="../docs/screenshots/08-cli-validate.png" style="width:100mm"><figcaption><b>Figure 9.</b> Command-line output of <code>python -m ram validate</code>.</figcaption></figure>
+</section>
+
+<!-- ============================== 8 EVALUATION ============================== -->
+<section id="s8">
+<h1>8&nbsp; Evaluation</h1>
+<h2>8.1&nbsp; Classifier accuracy (RQ2)</h2>
+<p>Table 5 and Figure 10 summarise classifier performance. On the labelled set the classifier is perfect (48/48). This result is <em>not</em> evidence of generalisation: the lexicon was written by the same author and with knowledge of the kinds of statements in the set. The held-out set was written afterwards, in different wording, and the lexicon was not modified in response to it. Accuracy drops to 50% (8/16).</p>
+<table class="d"><caption><b>Table 5.</b> Classifier results per level (P = precision, R = recall, F1).</caption>
+<tr><th rowspan="2">Level</th><th colspan="3" class="n">Labelled set (n = 48)</th><th colspan="3" class="n">Held-out set (n = 16)</th></tr>
+<tr><th class="n">P</th><th class="n">R</th><th class="n">F1</th><th class="n">P</th><th class="n">R</th><th class="n">F1</th></tr>
+<tr><td>Product</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td></tr>
+<tr><td>Feature</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">0.25</td><td class="n">0.40</td></tr>
+<tr><td>Function</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">0.33</td><td class="n">1.00</td><td class="n">0.50</td></tr>
+<tr><td>Component</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">0.75</td><td class="n">0.86</td></tr>
+<tr><td><b>Accuracy</b></td><td colspan="3" class="n"><b>100.0%</b></td><td colspan="3" class="n"><b>50.0%</b></td></tr>
+</table>
+
+<p>The errors are systematic, not random. All eight held-out errors were predicted as Function: all four product goals (for example <q>Make our students feel that the university listens to them</q>), three of four features (<q>A carpooling option for commuters</q>) and one component (<q>The mobile app targets Android 10 and above</q>). The cause is structural. Product- and feature-level statements can be phrased without any of the cue words that the lexicon recognises, and when no cue fires the classifier falls back to Function. Component statements are found reliably when they contain units or technology terms, and Function statements are found reliably when they contain interface vocabulary. The asymmetry suggests that concreteness is easy to detect lexically while abstraction is not. On the 40 accepted requirements of the case study the classifier agreed with the stated level in 38 cases (95%); the two disagreements were features F1 and F6, which it read as product-level statements with 59% and 52% confidence.</p>
+<figure class="nb"><img src="../docs/figures/fig3-confusion.png" style="width:118mm"><figcaption><b>Figure 10.</b> Confusion matrices on the labelled and held-out sets.</figcaption></figure>
+<h2>8.2&nbsp; Validator and model analysis (RQ3)</h2>
+<p>The validator detected all three seeded defects with no missed detections (3/3) and produced two additional, arguably legitimate findings (R005 on F1 and the N4/FN17 duplicate pair). Because the seeded defects were defined by the author, this is a test of the implementation, not a measurement of how many defects occur in real backlogs. Table 6 shows the headline model metrics.</p>
+<table class="d"><caption><b>Table 6.</b> Model metrics for CampusConnect.</caption>
+<tr><th>Metric</th><th class="n">Value</th><th>Interpretation</th></tr>
+<tr><td>Active requirements</td><td class="n">40</td><td>4 raw items excluded</td></tr>
+<tr><td>Traceability coverage</td><td class="n">96.4% (27/28)</td><td>Only FN16 lacks a Product ancestor</td></tr>
+<tr><td>Product refinement coverage</td><td class="n">100% (4/4)</td><td>Each goal has descendants down to Function level</td></tr>
+<tr><td>Acceptance coverage</td><td class="n">89.3% (25/28)</td><td>FN10, FN15, C10 lack criteria</td></tr>
+<tr><td>Validation findings</td><td class="n">1 / 8 / 4</td><td>Errors / warnings / information</td></tr>
+<tr><td>Remaining function and component value</td><td class="n">179</td><td>Sum of value scores not yet done</td></tr>
+</table>
+
+<h2>8.3&nbsp; Answers to the research questions</h2>
+<p><b>RQ1.</b> RAM can be operationalised as a checked model. Four levels, parent links, statuses and ten rules suffice to express the work-up activities, and the same definitions drive a command-line tool and a web application. Twenty-two automated tests confirm the behaviour. The operationalisation is an interpretation of RAM for agile teams and has not been validated against the original authors' process or in a live team.</p>
+<p><b>RQ2.</b> A transparent lexicon-based classifier is accurate on concrete statements and poor on abstract ones. It is an acceptable <em>assistant</em> for detecting Components and Functions, but not reliable enough to place goals and features automatically. In the toolkit this is handled by reporting confidence and cues and by making every suggestion advisory.</p>
+<p><b>RQ3.</b> Structural rules detect orphans, skipped levels, duplicates, unrefined goals and missing acceptance criteria; the traceability gate in the planner prevents unanchored work from being scheduled. The planner produces a plausible, explainable plan whose weaknesses (duplicates are planned unless removed, no dependency handling) are visible in the output.</p>
+</section>
+
+<!-- ============================== 9 DISCUSSION ============================== -->
+<section id="s9">
+<h1>9&nbsp; Discussion and Threats to Validity</h1>
+<h2>9.1&nbsp; Discussion</h2>
+<p><b>Structure pays off at the boundaries.</b> The most useful outputs were not the headline coverage numbers but the individual findings: the empty cells in the traceability matrix, the warning that a function depends on a goal only through a skipped level, the observation that a high-value function costs eight points once its constraint is counted. These are the conversations RAM is meant to provoke in backlog refinement.</p>
+<p><b>Abstraction is harder to detect than concreteness.</b> The held-out failure pattern is informative. Teams can write component-level statements with measurable units and named technologies, and these are easy to recognise. Goals and features are often phrased as short noun phrases (<q>a carpooling option</q>), which carry almost no lexical signal. A production-grade classifier would need semantic models, for example sentence embeddings or a fine-tuned language model trained on labelled backlogs. The transparent baseline remains valuable as an explainable comparator and as a fallback that can run offline.</p>
+<p><b>Advisory tooling fits agile values.</b> The toolkit never changes the model on its own and exposes the reasoning behind each suggestion. This respects the agile preference for individuals and interactions over tools, and keeps responsibility for placement with the team.</p>
+<h2>9.2&nbsp; Threats to validity</h2>
+<table class="d"><caption><b>Table 7.</b> Threats to validity (after Wohlin et al., 2012).</caption>
+<tr><th style="width:24%">Threat</th><th>Description</th><th style="width:30%">Mitigation</th></tr>
+<tr><td>Construct</td><td>Accuracy against author-assigned labels measures agreement with one person's view of the levels.</td><td>Labels follow the definitions of Gorschek and Wohlin (2006); ambiguous statements were avoided in the labelled set and deliberately included in the held-out set.</td></tr>
+<tr><td>Internal</td><td>The lexicon and the labelled set were written by the same author, so the 100% result is optimistic.</td><td>A separate held-out set was written afterwards and not used for tuning; both results are reported.</td></tr>
+<tr><td>External</td><td>CampusConnect is synthetic and small; estimates are illustrative; the held-out set has only 16 items, so a single item moves accuracy by 6 percentage points.</td><td>Stated explicitly; data and code released so others can replicate with real backlogs.</td></tr>
+<tr><td>Conclusion</td><td>No statistical testing or repeated trials; seeded defects are known to the author.</td><td>Results are presented descriptively and are claimed to demonstrate feasibility, not effectiveness.</td></tr>
+</table>
+<h2>9.3&nbsp; Limitations</h2>
+<p>The classifier is English-only and lexical. Similarity is measured by token overlap, so parent suggestions can be weak when the same idea is phrased differently (for example <q>Students want the app to be fast</q> was matched to F1 with similarity 0.07). The sprint planner is a greedy heuristic: it ignores dependencies between requirements, team velocity variation and the option of splitting items. The model allows one parent per requirement, and there has been no user study, so claims about usability and team benefit are out of scope.</p>
+</section>
+
+<!-- ============================== 10 CONCLUSION ============================== -->
+<section id="s10">
+<h1>10&nbsp; Conclusion and Future Work</h1>
+<p>This project turned the Requirements Abstraction Model into an executable, agile-friendly toolkit. RAM Studio encodes the four abstraction levels and the work-up activities as a checkable data model, advises on placement, validates structure with ten rules, exposes traceability and metrics, and plans sprints from a cost–value ranking restricted to goal-anchored requirements. On the CampusConnect case study it found all seeded defects and produced an explainable plan. An honest held-out evaluation showed that the lexicon-based classifier, while perfect on its development data, reaches only 50% on differently worded statements, because abstract goals and features carry little lexical signal.</p>
+<p>Future work follows directly from these findings. (1) Replace or complement the lexicon with a semantic classifier trained on labelled backlogs, keeping the lexicon as an explainable baseline. (2) Evaluate the approach with real teams, measuring refinement effort, defect detection and perceived usefulness. (3) Extend the model with dependencies, multiple parents and split/merge operations, and make the duplicate rule block planning by default. (4) Add integrations that import backlogs from issue trackers and export plans back, and run the validator in continuous integration as a <q>requirements build</q>. (5) Study how the metrics change over a project's life to detect drift between goals and delivered work.</p>
+
+</section>
+
+<!-- ============================== REFERENCES ============================== -->
+<section id="refs">
+<h1>References</h1>
+<ol class="refs">
+<li>Beck, K., Beedle, M., van Bennekum, A., Cockburn, A., Cunningham, W., Fowler, M., et al. (2001). <i>Manifesto for Agile Software Development</i>. https://agilemanifesto.org</li>
+<li>Cao, L., &amp; Ramesh, B. (2008). Agile requirements engineering practices: An empirical study. <i>IEEE Software</i>, 25(1), 60–67.</li>
+<li>Cohn, M. (2004). <i>User Stories Applied: For Agile Software Development</i>. Addison-Wesley.</li>
+<li>Gorschek, T., &amp; Wohlin, C. (2006). Requirements abstraction model. <i>Requirements Engineering</i>, 11(1), 79–101.</li>
+<li>Gotel, O. C. Z., &amp; Finkelstein, A. C. W. (1994). An analysis of the requirements traceability problem. In <i>Proceedings of the First International Conference on Requirements Engineering</i> (pp. 94–101). IEEE.</li>
+<li>Hevner, A. R., March, S. T., Park, J., &amp; Ram, S. (2004). Design science in information systems research. <i>MIS Quarterly</i>, 28(1), 75–105.</li>
+<li>IEEE. (2018). <i>ISO/IEC/IEEE 29148:2018 Systems and software engineering – Life cycle processes – Requirements engineering</i>. IEEE.</li>
+<li>Jaccard, P. (1912). The distribution of the flora in the alpine zone. <i>New Phytologist</i>, 11(2), 37–50.</li>
+<li>Karlsson, J., &amp; Ryan, K. (1997). A cost-value approach for prioritizing requirements. <i>IEEE Software</i>, 14(5), 67–74.</li>
+<li>Leffingwell, D. (2011). <i>Agile Software Requirements: Lean Requirements Practices for Teams, Programs, and the Enterprise</i>. Addison-Wesley.</li>
+<li>Regnell, B., &amp; Brinkkemper, S. (2005). Market-driven requirements engineering for software products. In A. Aurum &amp; C. Wohlin (Eds.), <i>Engineering and Managing Software Requirements</i> (pp. 287–308). Springer.</li>
+<li>Schwaber, K., &amp; Sutherland, J. (2020). <i>The Scrum Guide</i>. https://scrumguides.org</li>
+<li>Sommerville, I. (2016). <i>Software Engineering</i> (10th ed.). Pearson.</li>
+<li>Wake, B. (2003). <i>INVEST in good stories, and SMART tasks</i>. XP123. https://xp123.com</li>
+<li>Wiegers, K., &amp; Beatty, J. (2013). <i>Software Requirements</i> (3rd ed.). Microsoft Press.</li>
+<li>Wohlin, C., Runeson, P., Höst, M., Ohlsson, M. C., Regnell, B., &amp; Wesslén, A. (2012). <i>Experimentation in Software Engineering</i>. Springer.</li>
+</ol>
+
+<h1 id="appA" style="margin-top:22pt">Appendix A&nbsp; Reproducing the Results</h1>
+<p>All results can be regenerated from the repository (own backlogs: <code>python -m ram -f backlog.json validate</code>). The core toolkit needs only Python 3.9 or later; figures and the report additionally use matplotlib and pypdf, and screenshots need Microsoft Edge or Google Chrome.</p>
+<pre>git clone https://github.com/nakultt/agile-requirements-abstraction-model.git
+python -m unittest discover -s tests -v      # 22 tests
+python tools/evaluate.py                     # Table 5, Section 8.1
+python -m ram validate | plan | metrics      # Section 7.3, Tables 4 and 6
+python tools/make_screenshots.py             # Figures 3-9
+python tools/make_figures.py                 # Figures 1, 2, 10
+python tools/build_report.py                 # this PDF</pre>
+
+</section>
+
+</body>
+</html>

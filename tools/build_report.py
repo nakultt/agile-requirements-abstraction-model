@@ -46,7 +46,7 @@ def find_pages(pdf: Path):
     pages = [norm(p.extract_text() or "") for p in PdfReader(str(pdf)).pages]
     found = {}
     for key, text in HEADINGS.items():
-        for i in range(2, len(pages)):          # skip title page and the abstract/contents page
+        for i in range(3, len(pages)):          # skip title, abstract and contents pages
             if text in pages[i]:
                 found[key] = i + 1
                 break

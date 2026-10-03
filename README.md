@@ -115,6 +115,27 @@ be **refined downward** before the item is sprint-ready.
 The held-out result is reported deliberately: a lexicon-only classifier is an explainable
 baseline, not a substitute for a trained model or human judgement. See the report for discussion.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    IN[(Requirements<br/>JSON model)] --> M[ram/model.py<br/>Requirement · Model<br/>L1 Product → L2 Feature →<br/>L3 Function → L4 Component]
+    LEX[(ram/lexicon.json<br/>weighted cues)] --> C[ram/classifier.py<br/>level + confidence + cues]
+    M --> W[ram/workup.py<br/>suggest level · Jaccard parent ·<br/>abstract up / refine down]
+    C --> W
+    M --> A[ram/analysis.py<br/>validator R001–R010 ·<br/>traceability matrix · metrics ·<br/>priority score · sprint planner]
+    C --> A
+    W & A --> CLI[ram/cli.py<br/>python -m ram]
+    A --> BWD[tools/build_web_data.py]
+    LEX --> BWD
+    BWD --> JS[webapp/data.js]
+    JS --> WEB[webapp/index.html<br/>RAM Studio SPA<br/>same engine in JS]
+    A --> EV[tools/evaluate.py ·<br/>make_figures · build_report]
+    EV --> REP[(report/RAM_Report.pdf)]
+```
+
+The Python package is the reference engine. `build_web_data.py` exports the lexicon and the sample model so that the browser app, which ports the same logic to JavaScript, works offline without a build step or a server.
+
 ## Project layout
 
 ```
